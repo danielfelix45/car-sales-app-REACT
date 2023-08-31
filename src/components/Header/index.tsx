@@ -8,7 +8,7 @@ export function Header(){
 
   return(
     <div className='w-full flex items-center justify-center bg-white h-16 mb-4 drop-shadow'>
-      < header className='flex w-full mas-x-7xl mx-auto items-center justify-between px-4'>
+      < header className='flex w-full max-w-7xl mx-auto items-center justify-between px-4'>
         <Link to={'/'}>
           <img src={logoImg} alt="Logo do site" />
         </Link>
