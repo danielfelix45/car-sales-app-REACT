@@ -1,3 +1,4 @@
+import { useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/container';
 import { Input } from '../../components/input';
@@ -9,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { auth } from '../../services/firebaseConnection'; 
 import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
-import { useEffect } from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const schema = z.object({
   name: z.string().nonempty('O campo nome é obrigatório'),
@@ -21,7 +22,7 @@ type FormData = z.infer<typeof schema>;
 
 export function Register(){
   const navigate = useNavigate();
-
+  const {handleInfoUser} = useContext(AuthContext);
   const { register, handleSubmit, formState: {errors}} = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange'
@@ -40,6 +41,12 @@ export function Register(){
     .then(async (user) => {
       await updateProfile(user.user, {
         displayName: data.name
+      })
+
+      handleInfoUser({
+        uid: user.user.uid,
+        name: data.name,
+        email: data.email
       })
 
       console.log("Cadastrado com sucesso!");
