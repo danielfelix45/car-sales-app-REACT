@@ -35,7 +35,7 @@ export function Login(){
   function onSubmit(data: FormData){
     signInWithEmailAndPassword(auth, data.email, data.password)
     .then((user) => {
-      console.log("Logado ccom Sucesso!");
+      console.log("Logado com Sucesso!");
       console.log(user);
       navigate('/dashboard', {replace: true});
     })
@@ -65,7 +65,7 @@ export function Login(){
           <div className='mb-3'>
             <Input
               type='password'
-              placeholder='Digite seu email...'
+              placeholder='Digite sua senha...'
               name='password'
               error={errors.password?.message}
               register={register}

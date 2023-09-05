@@ -48,13 +48,12 @@ function AuthProvider({children}: IAuthProviderProps){
     return () => {
       unsub();
     }
-
   }, [])
 
   return(
     <AuthContext.Provider
     value={{
-      signed: !!null,
+      signed: !!user,
       loadingAuth,
     }}
     >

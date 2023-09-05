@@ -64,7 +64,7 @@ export function Register(){
               type='text'
               placeholder='Digite seu nome completo...'
               name='name'
-              error={errors.email?.message}
+              error={errors.name?.message}
               register={register}
             />
           </div>
@@ -73,14 +73,14 @@ export function Register(){
               type='email'
               placeholder='Digite seu email...'
               name='email'
-              error={errors.name?.message}
+              error={errors.email?.message}
               register={register}
             />
           </div>
           <div className='mb-3'>
             <Input
               type='password'
-              placeholder='Digite seu email...'
+              placeholder='Digite sua senha...'
               name='password'
               error={errors.password?.message}
               register={register}
