@@ -3,7 +3,7 @@ import { ChangeEvent, useState, useContext } from "react";
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FiUpload } from "react-icons/fi";
+import { FiTrash, FiUpload } from "react-icons/fi";
 import {v4 as uuidV4} from 'uuid';
 
 import { Container } from "../../../components/container";
@@ -30,6 +30,12 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+interface IImageItemProps {
+  uid: string;
+  name: string;
+  previewUrl: string;
+  url: string;
+}
 
 export function New(){
   const {user} = useContext(AuthContext);
@@ -37,6 +43,8 @@ export function New(){
     resolver: zodResolver(schema),
     mode: "onChange"
   });
+
+  const [carImages, setCarImages] = useState<IImageItemProps[]>([]);
 
   async function handleFile(e: ChangeEvent<HTMLInputElement>){
     if(e.target.files && e.target.files[0]){
@@ -64,8 +72,15 @@ export function New(){
 
     uploadBytes(uploadRef, image)
     .then((onSnapshot) => {
-      getDownloadURL(onSnapshot.ref).then((dowonloadUrl) => {
-        console.log(dowonloadUrl)
+      getDownloadURL(onSnapshot.ref).then((downloadUrl) => {
+        const imageItem = {
+          name: uidImage,
+          uid: currentUid,
+          previewUrl: URL.createObjectURL(image),
+          url: downloadUrl,
+        }
+
+        setCarImages((images) => [...images, imageItem]);
       })
     })
 
@@ -73,6 +88,18 @@ export function New(){
 
   function onSubmit(data: FormData){
     console.log(data);
+  }
+
+  async function handleDeleteImages(item: IImageItemProps){
+    const imagePath = `images/${item.uid}/${item.name}`;
+    const imageRef = ref(storage, imagePath);
+
+    try{
+      await deleteObject(imageRef)
+      setCarImages(carImages.filter((car) => car.url !== item.url))
+    }catch(e){
+      console.log("ERRO AO DELETAR")
+    }
   }
 
   return(
@@ -88,6 +115,19 @@ export function New(){
             <input className="opacity-0 cursor-pointer" type="file" accept="image/*" onChange={handleFile}/>
           </div>
         </button>
+
+        {carImages.map(item => (
+          <div key={item.name} className="w-full h-32 flex items-center justify-center relative">
+            <button className="absolute" onClick={() => handleDeleteImages(item)}>
+              <FiTrash size={28} color="#fff"/>
+            </button>
+            <img 
+              src={item.previewUrl} 
+              alt="Foto do carro"  
+              className="rounded-lg w-full h-32 object-cover"
+            />
+          </div>
+        ))}
       </div>
 
       <div className="w-full bg-white p-3 rounded-lg flex flex-col sm:flex-row items-center gap-2 mt-2">
