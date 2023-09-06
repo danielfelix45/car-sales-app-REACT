@@ -1,11 +1,19 @@
-import { FiUpload } from "react-icons/fi";
+import { ChangeEvent, useState, useContext } from "react";
+
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FiUpload } from "react-icons/fi";
+import {v4 as uuidV4} from 'uuid';
 
 import { Container } from "../../../components/container";
 import { DashboardHeader } from "../../../components/dashboardHeader";
 import { Input } from "../../../components/input";
+import { AuthContext } from "../../../contexts/AuthContext";
+
+import { storage } from "../../../services/firebaseConnection";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { onSnapshot } from "firebase/firestore";
 
 const schema = z.object({
  name: z.string().nonempty('O campo nome é obrigatório'),
@@ -24,10 +32,44 @@ type FormData = z.infer<typeof schema>;
 
 
 export function New(){
+  const {user} = useContext(AuthContext);
   const {register, handleSubmit, formState: {errors}, reset} = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onChange"
-  })
+  });
+
+  async function handleFile(e: ChangeEvent<HTMLInputElement>){
+    if(e.target.files && e.target.files[0]){
+      const image = e.target.files[0]
+
+      if(image.type === 'image/jpeg' || image.type === 'image/png'){
+        // Enviar pro banco de dados
+        await handleUpload(image);
+      }else{
+        alert("Envie uma imagem jpeg ou png!")
+        return
+      }
+    }
+  }
+
+  async function handleUpload(image: File){
+    if(!user?.uid){
+      return;
+    }
+
+    const currentUid = user.uid;
+    const uidImage = uuidV4();
+
+    const uploadRef = ref(storage, `images/${currentUid}/${uidImage}`)
+
+    uploadBytes(uploadRef, image)
+    .then((onSnapshot) => {
+      getDownloadURL(onSnapshot.ref).then((dowonloadUrl) => {
+        console.log(dowonloadUrl)
+      })
+    })
+
+  }
 
   function onSubmit(data: FormData){
     console.log(data);
@@ -43,7 +85,7 @@ export function New(){
             <FiUpload size={30} color='#000'/>
           </div>
           <div className="cursor-pointer">
-            <input className="opacity-0 cursor-pointer" type="file" accept="image/*"/>
+            <input className="opacity-0 cursor-pointer" type="file" accept="image/*" onChange={handleFile}/>
           </div>
         </button>
       </div>
