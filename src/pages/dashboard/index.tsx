@@ -65,7 +65,7 @@ export function Dashboard(){
     }
 
     loadCars();
-  }, []);
+  }, [user]);
 
   async function handleDeleteCar(car: ICarProps){
     const itemCar  = car;
