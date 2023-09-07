@@ -5,7 +5,8 @@ import { Container } from "../../components/container";
 import { DashboardHeader } from "../../components/dashboardHeader";
 
 import { collection,getDocs, where, query, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../../services/firebaseConnection";
+import { db, storage } from "../../services/firebaseConnection";
+import { ref, deleteObject } from "firebase/storage";
 import { AuthContext } from "../../contexts/AuthContext";
 
 interface ICarProps{
@@ -66,14 +67,26 @@ export function Dashboard(){
     loadCars();
   }, []);
 
-  async function handleDeleteCar(id: string){
+  async function handleDeleteCar(car: ICarProps){
+    const itemCar  = car;
     // Aqui vai no banco de dados e busca o carro pelo id
-    const docRef = doc(db, 'cars', id)
-    // Aqui deleta o carro
+    const docRef = doc(db, 'cars', itemCar.id)
+    // Aqui deleta o carro no banco de dados
     await deleteDoc(docRef)
-    // Retorna o array de carros menos o carro que foi deletado
-    setCars(cars.filter(car => car.id !== id))
 
+    // Aqui deleta o carro no storage tbm
+    itemCar.images.map(async (image) => {
+      const imagePath = `images/${image.uid}/${image.name}`;
+      const imageRef = ref(storage, imagePath)
+
+      try{
+        await deleteObject(imageRef)
+        // Retorna o array de carros menos o carro que foi deletado
+        setCars(cars.filter(car => car.id !== itemCar.id))
+      }catch(e){
+        console.log('ERRO AO EXCLUIR ESSA IMAGEM')
+      }
+    })
   }
 
   return(
@@ -83,7 +96,7 @@ export function Dashboard(){
       <main className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {cars.map(car => (
           <section key={car.id} className="w-full bg-white rounded-lg relative">
-            <button onClick={() => handleDeleteCar(car.id)} className="absolute bg-white w-14 h-14 rounded-full flex items-center justify-center right-2 top-2 drop-shadow">
+            <button onClick={() => handleDeleteCar(car)} className="absolute bg-white w-14 h-14 rounded-full flex items-center justify-center right-2 top-2 drop-shadow">
               <FiTrash2 size={26} color='#000'/>
             </button>
 
