@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Container } from "../../components/container";
 import {FaWhatsapp} from 'react-icons/fa';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
@@ -33,6 +33,7 @@ export function CarDetail(){
   const {id} = useParams();
   const [car, setCar] = useState<ICarProps>();
   const [sliderPerView, setSliderPerView] = useState<number>(2);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadCar(){
@@ -41,6 +42,11 @@ export function CarDetail(){
       const docRef = doc(db, 'cars', id)
       getDoc(docRef)
       .then((snapshot) => {
+
+        if(!snapshot.data()){
+          navigate('/');
+        }
+
         setCar({
           id: snapshot.data()?.id,
           name: snapshot.data()?.name,
@@ -87,7 +93,8 @@ export function CarDetail(){
   return(
     <Container>
       
-      <Swiper
+      {car && (
+        <Swiper
         slidesPerView={sliderPerView}
         pagination={{clickable: true}}
         navigation
@@ -98,6 +105,7 @@ export function CarDetail(){
           </SwiperSlide>
         ))}
       </Swiper>
+      )}
 
       { car && (
         <main className="w-full bg-white rounded-lg p-6 my-4">
@@ -134,6 +142,8 @@ export function CarDetail(){
           <p>{car?.whatsapp}</p>
 
           <a 
+            href={`https://api.whatsapp.com/send?phone=${car?.whatsapp}&text=Olá vi esse ${car?.name} e fiquei interessado!`}
+            target="blank"
             className="cursor-pointer bg-green-500 w-full text-white flex items-center justify-center gap-2 my-6 h-11 text-xl rounded-lg font-medium"
           >
             Conversar com o vendedor
