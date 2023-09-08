@@ -26,6 +26,7 @@ export function Login(){
     mode: 'onChange'
   });
 
+  // Aqui desloga o usuário, pra acessar a pagina login precisa estar logado.
   useEffect(() => {
     async function handleLogout(){
       await signOut(auth)
@@ -36,14 +37,11 @@ export function Login(){
 
   function onSubmit(data: FormData){
     signInWithEmailAndPassword(auth, data.email, data.password)
-    .then((user) => {
-      console.log("Logado com Sucesso!");
-      console.log(user);
+    .then(() => {
       toast.success("Logado com sucesso!")
       navigate('/dashboard', {replace: true});
     })
     .catch((e) => {
-      console.log("Erro ao Logar!");
       console.log(e);
       toast.error("Erro ao fazer login")
     })
@@ -76,12 +74,17 @@ export function Login(){
             />
           </div>
 
-          <button type='submit' className='bg-zinc-900 w-full rounded-md text-white h-10 font-madium'>Acessar</button>
+          <button 
+            type='submit' 
+            className='bg-zinc-900 w-full rounded-md text-white h-10 font-madium'
+            >
+              Acessar
+          </button>
           
         </form>
 
         <Link to={'/register'}>
-          Ainda não possui uma conta? Cadastre-se
+          Ainda não possui uma conta? <span className="font-medium">Cadastre-se</span>
         </Link>
 
       </div>

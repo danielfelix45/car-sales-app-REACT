@@ -119,7 +119,7 @@ export function New(){
     .then(() => {
       reset();
       setCarImages([]);
-      toast.success('CADASTRADO COM SUCESSO!')
+      toast.success('Veículo cadastrado com sucesso!')
     })
     .catch((e) => {
       console.log(e);
@@ -135,7 +135,7 @@ export function New(){
       await deleteObject(imageRef)
       setCarImages(carImages.filter((car) => car.url !== item.url))
     }catch(e){
-      console.log("ERRO AO DELETAR")
+      toast.error("ERRO AO DELETAR IMAGEM")
     }
   }
 

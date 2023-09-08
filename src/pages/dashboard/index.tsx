@@ -8,6 +8,7 @@ import { collection,getDocs, where, query, doc, deleteDoc } from "firebase/fires
 import { db, storage } from "../../services/firebaseConnection";
 import { ref, deleteObject } from "firebase/storage";
 import { AuthContext } from "../../contexts/AuthContext";
+import { toast } from "react-hot-toast";
 
 interface ICarProps{
   id: string;
@@ -74,7 +75,7 @@ export function Dashboard(){
     // Aqui deleta o carro no banco de dados
     await deleteDoc(docRef)
 
-    // Aqui deleta o carro no storage tbm
+    // Aqui deleta a imagem do carro no storage tbm
     itemCar.images.map(async (image) => {
       const imagePath = `images/${image.uid}/${image.name}`;
       const imageRef = ref(storage, imagePath)
@@ -84,7 +85,7 @@ export function Dashboard(){
         // Retorna o array de carros menos o carro que foi deletado
         setCars(cars.filter(car => car.id !== itemCar.id))
       }catch(e){
-        console.log('ERRO AO EXCLUIR ESSA IMAGEM')
+        toast.error('ERRO AO EXCLUIR ESSA IMAGEM')
       }
     })
   }

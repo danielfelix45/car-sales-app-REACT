@@ -30,6 +30,7 @@ export function Register(){
     mode: 'onChange'
   })
 
+  // Aqui desloga o usuário, pra acessar a página de cadastro precisa estar logado.
   useEffect(() => {
     async function handleLogout(){
       await signOut(auth)
@@ -45,17 +46,17 @@ export function Register(){
         displayName: data.name
       })
 
+      // Aqui atualiza o usuário cadastrado, no context.
       handleInfoUser({
         uid: user.user.uid,
         name: data.name,
         email: data.email
       })
 
-      toast.success("Bem-vindo ao Webarros!")
+      toast.success("Bem-vindo ao WebCarros!")
       navigate("/dashboard", {replace: true});
     })
     .catch((e) => {
-      console.log("Erro ao cadastrar usuario!");
       console.log(e);
     })
   }
@@ -106,7 +107,7 @@ export function Register(){
         </form>
 
         <Link to={'/login'}>
-          Já possui uma conta? Faça login!
+          Já possui uma conta? <span className='font-medium'>Faça login!</span>
         </Link>
 
       </div>
