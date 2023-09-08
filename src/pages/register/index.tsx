@@ -12,6 +12,8 @@ import { auth } from '../../services/firebaseConnection';
 import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 import { AuthContext } from '../../contexts/AuthContext';
 
+import { toast } from 'react-hot-toast';
+
 const schema = z.object({
   name: z.string().nonempty('O campo nome é obrigatório'),
   email: z.string().email('Insira um email válido').nonempty('O campo email é obrigatório'),
@@ -49,7 +51,7 @@ export function Register(){
         email: data.email
       })
 
-      console.log("Cadastrado com sucesso!");
+      toast.success("Bem-vindo ao Webarros!")
       navigate("/dashboard", {replace: true});
     })
     .catch((e) => {

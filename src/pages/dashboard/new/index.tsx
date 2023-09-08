@@ -14,6 +14,7 @@ import { AuthContext } from "../../../contexts/AuthContext";
 import { storage, db } from "../../../services/firebaseConnection";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { addDoc, collection } from "firebase/firestore";
+import { toast } from "react-hot-toast";
 
 const schema = z.object({
  name: z.string().nonempty('O campo nome é obrigatório'),
@@ -81,6 +82,7 @@ export function New(){
         }
 
         setCarImages((images) => [...images, imageItem]);
+        toast.success("Imagem cadastrada com sucesso!")
       })
     })
 
@@ -88,7 +90,7 @@ export function New(){
 
   function onSubmit(data: FormData){
     if(carImages.length === 0){
-      alert("Envie alguma imagem deste carro!")
+      toast.error("Envie alguma imagem deste carro!")
       return;
     }
 
@@ -117,10 +119,11 @@ export function New(){
     .then(() => {
       reset();
       setCarImages([]);
-      console.log('CADASTRADO COM SUCESSO!')
+      toast.success('CADASTRADO COM SUCESSO!')
     })
     .catch((e) => {
       console.log(e);
+      toast.error("Erro ao cadastrar veículo")
     })
   }
 
